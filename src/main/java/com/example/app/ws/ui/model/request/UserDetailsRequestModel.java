@@ -5,6 +5,7 @@ public class UserDetailsRequestModel {
 	private String lastName;
 	private String email;
 	private String password;
+	
 	public String getFirstName() {
 		return firstName;
 	}
