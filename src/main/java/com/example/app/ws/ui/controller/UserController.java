@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.app.ws.ui.model.request.UserDetailsRequestModel;
+import com.example.app.ws.ui.model.response.UserRest;
 
 @RestController
 @RequestMapping("users") // http://localhost:8080/users
@@ -18,8 +19,8 @@ public class UserController {
 		return "Get user was called";
 	}
 	@PostMapping
-	public String createUser(@RequestBody UserDetailsRequestModel userDetails) {
-		return "Create user was called";
+	public UserRest createUser(@RequestBody UserDetailsRequestModel userDetails) {
+		return null;
 	}
 	@PutMapping
 	public String updateUser() {
