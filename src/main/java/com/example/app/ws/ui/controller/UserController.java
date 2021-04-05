@@ -122,8 +122,8 @@ public class UserController {
 	}
 
 	// localhost:8080/mobile-app-ws/users/{id}/addresses
-	@GetMapping(path = "/{id}/addresses", produces = { MediaType.APPLICATION_JSON_VALUE,
-			MediaType.APPLICATION_XML_VALUE })
+	@GetMapping(path = "/{id}/addresses", 
+			produces = { MediaType.APPLICATION_JSON_VALUE,MediaType.APPLICATION_XML_VALUE })
 	public List<AddressRest> getUserAddresses(@PathVariable String id) {
 		List<AddressRest> returnValue = new ArrayList<>();
 
@@ -136,5 +136,22 @@ public class UserController {
 		}
 		return returnValue;
 	}
+	// localhost:8080/mobile-app-ws/users/{id}/addresses/{addressId}
+	@GetMapping(path = "/{userId}/addresses/{addressId}", 
+			produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
+	public AddressRest getUserAddress(@PathVariable String addressId) {
+		AddressRest returnValue = new AddressRest();
+		
+		AddressDto addressDto = addressesService.getAddress(addressId);
+		
+		if(addressDto != null) {
+			ModelMapper modelMapper = new ModelMapper();
+			returnValue = modelMapper.map(addressDto, AddressRest.class);
+		}
+		
+		return returnValue;
+	}
+		
+	
 
 }

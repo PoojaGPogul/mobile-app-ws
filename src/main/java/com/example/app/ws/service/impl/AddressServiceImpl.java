@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.example.app.ws.io.entity.AddressEntity;
 import com.example.app.ws.io.entity.UserEntity;
@@ -13,6 +14,7 @@ import com.example.app.ws.io.repositories.UserRepository;
 import com.example.app.ws.service.AddressService;
 import com.example.app.ws.shared.dto.AddressDto;
 
+@Service
 public class AddressServiceImpl implements AddressService {
 
 	@Autowired
@@ -39,6 +41,21 @@ public class AddressServiceImpl implements AddressService {
 		}
 		
 		return returnValue;
+	}
+
+
+	@Override
+	public AddressDto getAddress(String addressId) {
+		AddressDto addressDto = new AddressDto();
+		
+		AddressEntity addressEntity = addressRepository.findByAddressId(addressId);
+		
+		if(addressEntity != null) {
+			ModelMapper modelMapper = new ModelMapper();
+			addressDto = modelMapper.map(addressEntity, AddressDto.class);
+		}
+		
+		return addressDto;
 	}
 
 }
