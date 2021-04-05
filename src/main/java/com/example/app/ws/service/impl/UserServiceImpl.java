@@ -1,6 +1,5 @@
 package com.example.app.ws.service.impl;
 
-import java.beans.Beans;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,9 +22,7 @@ import com.example.app.ws.service.UserService;
 import com.example.app.ws.shared.Utils;
 import com.example.app.ws.shared.dto.AddressDto;
 import com.example.app.ws.shared.dto.UserDto;
-import com.example.app.ws.ui.model.response.ErrorMessage;
 import com.example.app.ws.ui.model.response.ErrorMessages;
-import com.example.app.ws.ui.model.response.UserRest;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -98,8 +95,10 @@ public class UserServiceImpl implements UserService {
 		if (userEntity == null) {
 			throw new UserServiceException("User with ID: "+id+" not found");
 		}
-		BeanUtils.copyProperties(userEntity, returnValue);
-
+		
+		ModelMapper modelMapper = new ModelMapper();
+		returnValue = modelMapper.map(userEntity, UserDto.class);
+		
 		return returnValue;
 	}
 
