@@ -148,4 +148,10 @@ public class UserServiceImpl implements UserService {
 		return returnValues;
 	}
 
+	@Override
+	public boolean verifyEmailToken(String token) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }
