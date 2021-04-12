@@ -174,11 +174,13 @@ public class UserServiceImpl implements UserService {
 				returnValue = true;
 			}
 		}
-		
-		
-		
-		
 		return returnValue;
+	}
+
+	@Override
+	public boolean requestPasswordReset(String email) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }
