@@ -7,22 +7,22 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 
-@Entity(name="")
+@Entity(name = "password_reset_tokens")
 public class PasswordResetTokenEntity implements Serializable {
-	
+
 	private static final long serialVersionUID = -6419329626960007675L;
 
 	@Id
 	@GeneratedValue
 	private long id;
-	
-	@Column(nullable=false)
+
+	@Column
 	private String token;
-	
-	@ManyToOne
-	@JoinColumn(name="users_id")
+
+	@OneToOne()
+	@JoinColumn(name = "users_id")
 	private UserEntity userDetails;
 
 	public long getId() {
@@ -48,7 +48,5 @@ public class PasswordResetTokenEntity implements Serializable {
 	public void setUserDetails(UserEntity userDetails) {
 		this.userDetails = userDetails;
 	}
-	
-	
 
 }
