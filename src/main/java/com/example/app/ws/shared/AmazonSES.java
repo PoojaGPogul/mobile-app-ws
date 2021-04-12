@@ -51,5 +51,10 @@ public class AmazonSES {
 		System.out.println("Email sent!");
 		
 	}
+
+	public boolean sendPasswordResetRequest(String firstName, String email, String token) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 	
 }

@@ -59,6 +59,11 @@ public class Utils {
 		
 		return token;
 	}
+
+	public static String generatePasswordResetToken(String userId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 	
 }
