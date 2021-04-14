@@ -183,7 +183,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public boolean requestPasswordReset(String email) {
+	public boolean requestPasswordRequest(String email) {
 		boolean returnValue = false;
 		
 		UserEntity userEntity = userRepository.findByEmail(email);
@@ -201,6 +201,12 @@ public class UserServiceImpl implements UserService {
 		returnValue = new AmazonSES().sendPasswordResetRequest(userEntity.getFirstName(),userEntity.getEmail(), token);
 				
 		return returnValue;
+	}
+
+	@Override
+	public boolean resetPassword(String token, String password) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

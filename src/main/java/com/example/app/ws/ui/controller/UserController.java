@@ -29,6 +29,7 @@ import com.example.app.ws.service.AddressService;
 import com.example.app.ws.service.UserService;
 import com.example.app.ws.shared.dto.AddressDto;
 import com.example.app.ws.shared.dto.UserDto;
+import com.example.app.ws.ui.model.request.PasswordResetModel;
 import com.example.app.ws.ui.model.request.PasswordResetRequestModel;
 import com.example.app.ws.ui.model.request.UserDetailsRequestModel;
 import com.example.app.ws.ui.model.response.AddressRest;
@@ -139,25 +140,24 @@ public class UserController {
 			}.getType();
 			ModelMapper modelMapper = new ModelMapper();
 			returnValue = modelMapper.map(addressDtos, listType);
-			
-			for(AddressRest addressRest: returnValue) {
-				Link selfLinkToAddress = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(UserController.class)
-						.getUserAddress(id, addressRest.getAddressId()))
+
+			for (AddressRest addressRest : returnValue) {
+				Link selfLinkToAddress = WebMvcLinkBuilder.linkTo(
+						WebMvcLinkBuilder.methodOn(UserController.class).getUserAddress(id, addressRest.getAddressId()))
 						.withSelfRel();
 				addressRest.add(selfLinkToAddress);
 			}
-			
+
 		}
-		
+
 		// http://localhost:8080/users/<userId>
 		Link userLink = WebMvcLinkBuilder.linkTo(UserController.class).slash(id).withRel("user");
 
 		// http://localhost:8080/users/<userId>/addresses
-		Link selfLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(UserController.class)
-										.getUserAddresses(id))
-										.withSelfRel();
-				
-		return CollectionModel.of(returnValue,userLink, selfLink);
+		Link selfLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(UserController.class).getUserAddresses(id))
+				.withSelfRel();
+
+		return CollectionModel.of(returnValue, userLink, selfLink);
 	}
 
 	// localhost:8080/mobile-app-ws/users/{id}/addresses/{addressId}
@@ -175,46 +175,65 @@ public class UserController {
 		Link userLink = WebMvcLinkBuilder.linkTo(UserController.class).slash(userId).withRel("user");
 
 		// http://localhost:8080/users/<userId>/addresses
-		Link userAddressesLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(UserController.class)
-								.getUserAddresses(userId))
-								.withRel("addresses");			
+		Link userAddressesLink = WebMvcLinkBuilder
+				.linkTo(WebMvcLinkBuilder.methodOn(UserController.class).getUserAddresses(userId)).withRel("addresses");
 
 		// http://localhost:8080/users/<userId>/addresses/<addressId>
-		Link selfLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(UserController.class)
-								.getUserAddress(userId, addressId))
-								.withSelfRel();
+		Link selfLink = WebMvcLinkBuilder
+				.linkTo(WebMvcLinkBuilder.methodOn(UserController.class).getUserAddress(userId, addressId))
+				.withSelfRel();
 
 		return EntityModel.of(returnValue, Arrays.asList(userLink, userAddressesLink, selfLink));
 
 	}
-	
+
 	// localhost:8080/mobile-app-ws/users/email-verification?token=2321323423
 	@GetMapping(path = "/email-verification", produces = { MediaType.APPLICATION_JSON_VALUE,
 			MediaType.APPLICATION_XML_VALUE })
-	public OperationStatusModel verifyEmailToken(@RequestParam(value="token") String token) {
+	public OperationStatusModel verifyEmailToken(@RequestParam(value = "token") String token) {
 		OperationStatusModel returnValue = new OperationStatusModel();
 		returnValue.setOperationName(RequestOperationName.VERIFY_EMAIL.name());
-		
+
 		boolean isVerified = userService.verifyEmailToken(token);
-		
-		if(isVerified)
+
+		if (isVerified)
 			returnValue.setOperationResult(RequestOperationStatus.SUCCESS.name());
-		else 
+		else
 			returnValue.setOperationResult(RequestOperationStatus.ERROR.name());
-		
+
 		return returnValue;
 	}
-	
+
 	// localhost:8080/mobile-app-ws/users/password-reset-request
-	@PostMapping(path = "/password-reset-request",
-			consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE }, produces = {
-			MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
+	@PostMapping(path = "/password-reset-request", consumes = { MediaType.APPLICATION_JSON_VALUE,
+			MediaType.APPLICATION_XML_VALUE }, produces = { MediaType.APPLICATION_JSON_VALUE,
+					MediaType.APPLICATION_XML_VALUE })
 	public OperationStatusModel requestReset(@RequestBody PasswordResetRequestModel passwordRequestResetModel) {
 		OperationStatusModel returnValue = new OperationStatusModel();
-		
-		boolean operationResult = userService.requestPasswordReset(passwordRequestResetModel.getEmail());
-		
+
+		boolean operationResult = userService.requestPasswordRequest(passwordRequestResetModel.getEmail());
+
 		returnValue.setOperationName(RequestOperationName.REQUEST_PASSWORD_RESET.name());
+		returnValue.setOperationResult(RequestOperationStatus.ERROR.name());
+
+		if (operationResult) {
+			returnValue.setOperationResult(RequestOperationStatus.SUCCESS.name());
+		}
+
+		return returnValue;
+	}
+
+	// localhost:8080/mobile-app-ws/users/password-reset
+	@PostMapping(path = "/password-reset", consumes = { MediaType.APPLICATION_JSON_VALUE,
+			MediaType.APPLICATION_XML_VALUE })
+	public OperationStatusModel resetPassword(@RequestBody PasswordResetModel passwordResetModel) {
+		OperationStatusModel returnValue = new OperationStatusModel();
+		
+		boolean operationResult = userService.resetPassword(
+				passwordResetModel.getToken(),
+				passwordResetModel.getPassword());
+		
+		returnValue.setOperationName(RequestOperationName.PASSWORD_RESET.name());
 		returnValue.setOperationResult(RequestOperationStatus.ERROR.name());
 		
 		if(operationResult) {
@@ -222,8 +241,7 @@ public class UserController {
 		}
 		
 		return returnValue;
+		
 	}
-
-	
 
 }
