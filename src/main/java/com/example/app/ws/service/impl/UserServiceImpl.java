@@ -41,12 +41,15 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	BCryptPasswordEncoder bCryptPasswordEncoder;
+	
+	@Autowired
+	AmazonSES amazonSES;
 
 	@Override
 	public UserDto createUser(UserDto userDto) {
 
 		if (userRepository.findByEmail(userDto.getEmail()) != null) {
-			throw new RuntimeException("Record already exists!");
+			throw new UserServiceException("Record already exists!");
 		}
 		
 		for(int i=0;i<userDto.getAddresses().size();i++) {
@@ -69,7 +72,7 @@ public class UserServiceImpl implements UserService {
 		UserDto returnValue = modelMapper.map(storedUserDetails, UserDto.class);
 		
 		//Send email message to user to verify email address 
-		new AmazonSES().verifyEmail(returnValue);
+		amazonSES.verifyEmail(returnValue);
 
 		
 		return returnValue;

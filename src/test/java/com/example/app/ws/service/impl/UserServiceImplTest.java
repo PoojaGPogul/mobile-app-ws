@@ -17,15 +17,18 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import com.example.app.ws.exceptions.UserServiceException;
 import com.example.app.ws.io.entity.AddressEntity;
 import com.example.app.ws.io.entity.UserEntity;
 import com.example.app.ws.io.repositories.UserRepository;
+import com.example.app.ws.shared.AmazonSES;
 import com.example.app.ws.shared.Utils;
 import com.example.app.ws.shared.dto.AddressDto;
 import com.example.app.ws.shared.dto.UserDto;
@@ -44,6 +47,9 @@ class UserServiceImplTest {
 	@Mock
 	BCryptPasswordEncoder bCryptPasswordEncoder;
 
+	@Mock
+	AmazonSES amazonSES;
+
 	String userId = "qwerty";
 	String encodedPassword = "kdfnwkerjskdfn";
 	UserEntity userEntity;
@@ -55,7 +61,7 @@ class UserServiceImplTest {
 		userEntity = new UserEntity();
 		userEntity.setId(1L);
 		userEntity.setFirstName("Pooja");
-		userEntity.setFirstName("Pogul");
+		userEntity.setLastName("Pogul");
 		userEntity.setUserId(userId);
 		userEntity.setEncryptedPassword(encodedPassword);
 		userEntity.setEmail("test@test.com");
@@ -92,14 +98,10 @@ class UserServiceImplTest {
 	}
 
 	@Test
-	final void testCreateUser() {
-		
-		when(userRepository.findByEmail(anyString())).thenReturn(null);
-		when(utils.generateAddressId(anyInt())).thenReturn("asdsdfsdfsdfdsf");
-		when(utils.generateUserId(anyInt())).thenReturn(userId);
-		when(bCryptPasswordEncoder.encode(anyString())).thenReturn(encodedPassword);
-		when(userRepository.save(any(UserEntity.class))).thenReturn(userEntity);
-		
+	final void testCreateUser_UserServiceException() {
+		// Mocking - providing fake result
+		when(userRepository.findByEmail(anyString())).thenReturn(userEntity);
+
 		UserDto userDto = new UserDto();
 		userDto.setAddresses(getAddressDtos());
 		userDto.setFirstName("Pooja");
@@ -107,8 +109,32 @@ class UserServiceImplTest {
 		userDto.setPassword("123");
 		userDto.setEmail("test@test.com");
 		
+		// Assertions
+		assertThrows(UserServiceException.class, () -> {
+			userService.createUser(userDto);
+		});
+
+	}
+
+	@Test
+	final void testCreateUser() {
+
+		when(userRepository.findByEmail(anyString())).thenReturn(null);
+		when(utils.generateAddressId(anyInt())).thenReturn("asdsdfsdfsdfdsf");
+		when(utils.generateUserId(anyInt())).thenReturn(userId);
+		when(bCryptPasswordEncoder.encode(anyString())).thenReturn(encodedPassword);
+		when(userRepository.save(any(UserEntity.class))).thenReturn(userEntity);
+		Mockito.doNothing().when(amazonSES).verifyEmail(any(UserDto.class));
+
+		UserDto userDto = new UserDto();
+		userDto.setAddresses(getAddressDtos());
+		userDto.setFirstName("Pooja");
+		userDto.setLastName("Pogul");
+		userDto.setPassword("123");
+		userDto.setEmail("test@test.com");
+
 		UserDto storedUserDetails = userService.createUser(userDto);
-		
+
 		assertNotNull(storedUserDetails);
 		assertEquals(userEntity.getFirstName(), storedUserDetails.getFirstName());
 		assertEquals(userEntity.getLastName(), storedUserDetails.getLastName());
@@ -139,17 +165,17 @@ class UserServiceImplTest {
 
 		return addresses;
 	}
-	
+
 	private List<AddressEntity> getAddressEntities() {
 		List<AddressDto> addresses = getAddressDtos();
-		
+
 		ModelMapper mapper = new ModelMapper();
-		
-		Type listType = new TypeToken<List<AddressEntity>>() {}.getType();
-		
+
+		Type listType = new TypeToken<List<AddressEntity>>() {
+		}.getType();
+
 		return new ModelMapper().map(addresses, listType);
-				
-		
+
 	}
 
 }
