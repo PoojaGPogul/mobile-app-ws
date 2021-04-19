@@ -1,5 +1,6 @@
 package com.example.app.ws.shared;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -25,7 +26,7 @@ class UtilsTest {
 	}
 
 	@Test
-	void testGenerateUserId() {
+	final void testGenerateUserId() {
 		String userID1 = utils.generateUserId(30);
 		String userID2 = utils.generateUserId(30);
 		
@@ -39,9 +40,22 @@ class UtilsTest {
 	}
 
 	@Test
-	@Disabled
-	void testHasTokenExpired() {
-		fail("Not yet implemented");
+	final void testHasTokenNotExpired() {
+		String token = utils.generateEmailVerificationToken("asdasfaf");
+		assertNotNull(token);
+		
+		boolean hasTokenExpired = Utils.hasTokenExpired(token);
+		assertFalse(hasTokenExpired);
 	}
+	
+	@Test
+	final void testHasTokenExpired() {
+		String expiredToken = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJUemdNb3BLczhJaHJyU1J4dm9GcXZkaGdrZTBLUUkiLCJleHAiOjE2MTg0MDQyNTR9.HDHvwmy9ZNsd1Z3DS2I_MBq0RDRSRuZjFdm2nZRxMudxoA3qkCbd8gvcDeo9D2nWwZsB2Tawz39HtKewGGYkPA";
+		
+		boolean hasTokenExpired = Utils.hasTokenExpired(expiredToken);
+		assertTrue(hasTokenExpired);
+		
+	}
+	
 
 }
