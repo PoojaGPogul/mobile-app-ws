@@ -25,20 +25,63 @@ class UserRepositoryTest {
 	@Autowired
 	UserRepository userRepository;
 	
+	static boolean recordsCreated = false;
+	
 	@BeforeEach
 	void setUp() throws Exception {
+		if(!recordsCreated) {
+			createRecords();
+			recordsCreated = true;
+		}
+	}
+
+	@Test
+	void testGetVerifiedUsers() {
+		
+		Pageable pageableRequest = PageRequest.of(0, 1);
+		Page<UserEntity> pages =  userRepository.findAllUsersWithConfirmedEmailAddress(pageableRequest);
+		assertNotNull(pages);
+		
+		List<UserEntity> userEntities = pages.getContent();
+		assertNotNull(userEntities);
+		assertTrue(userEntities.size() == 1);
+		
+	}
+	
+	@Test
+	void testFindUserByFirstName() {
+		String firstName = "Pooja";
+		List<UserEntity> usersEntities = userRepository.findUserByFirstName(firstName);
+		
+		assertNotNull(usersEntities);
+		assertTrue(usersEntities.size() == 1);
+		assertEquals(firstName, usersEntities.get(0).getFirstName());
+		
+	}
+	
+	@Test
+	void testFindUserByLastName() {
+		String lastName = "Pogul";
+		List<UserEntity> usersEntities = userRepository.findUserByLastName(lastName);
+		
+		assertNotNull(usersEntities);
+		assertTrue(usersEntities.size() == 1);
+		assertEquals(lastName, usersEntities.get(0).getLastName());
+		
+	}
+	
+	private void createRecords() {
 		UserEntity userEntity = new UserEntity();
-		userEntity.setId(1L);
 		userEntity.setFirstName("Pooja");
 		userEntity.setLastName("Pogul");
-		userEntity.setUserId("asdasd");
+		userEntity.setUserId("asdasdww");
 		userEntity.setEncryptedPassword("aaa");
 		userEntity.setEmail("test@test.com");
 		userEntity.setEmailVerificationStatus(true);
 		
 		AddressEntity addressEntity = new AddressEntity();
 		addressEntity.setType("shipping");
-		addressEntity.setAddressId("aadsad");
+		addressEntity.setAddressId("aadsa23d");
 		addressEntity.setCity("Solapur");
 		addressEntity.setCountry("India");
 		addressEntity.setPostalCode("123123");
@@ -52,17 +95,16 @@ class UserRepositoryTest {
 		userRepository.save(userEntity);
 		
 		UserEntity userEntity2 = new UserEntity();
-		userEntity2.setId(2L);
 		userEntity2.setFirstName("Pooja1");
 		userEntity2.setLastName("Pogul1");
-		userEntity2.setUserId("asdasdsdsdf");
+		userEntity2.setUserId("asdasdsdsdwwf");
 		userEntity2.setEncryptedPassword("aaaas");
-		userEntity2.setEmail("test2@test.com");
+		userEntity2.setEmail("test_test@test.com");
 		userEntity2.setEmailVerificationStatus(true);
 		
 		AddressEntity addressEntity2 = new AddressEntity();
 		addressEntity2.setType("shipping");
-		addressEntity2.setAddressId("aadsasdsdd");
+		addressEntity2.setAddressId("aadsas2dsdd");
 		addressEntity2.setCity("Solapur");
 		addressEntity2.setCountry("India");
 		addressEntity2.setPostalCode("123123");
@@ -74,19 +116,6 @@ class UserRepositoryTest {
 		userEntity2.setAddresses(listAddresses2);
 		
 		userRepository.save(userEntity2);
-		
-	}
-
-	@Test
-	void testGetVerifiedUsers() {
-		Pageable pageableRequest = PageRequest.of(0, 1);
-		Page<UserEntity> pages =  userRepository.findAllUsersWithConfirmedEmailAddress(pageableRequest);
-		assertNotNull(pages);
-		
-		List<UserEntity> userEntities = pages.getContent();
-		assertNotNull(userEntities);
-		assertTrue(userEntities.size() == 1);
-		
 	}
 
 }
