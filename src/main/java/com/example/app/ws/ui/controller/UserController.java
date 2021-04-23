@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -90,11 +89,13 @@ public class UserController {
 		}
 
 		UserDto userDto = new UserDto();
-		BeanUtils.copyProperties(userDetails, userDto);
 
+		ModelMapper modelMapper = new ModelMapper();
+		userDto = modelMapper.map(userDetails, UserDto.class);
+		
 		UserDto updatedUser = userService.updateUser(id, userDto);
-		BeanUtils.copyProperties(updatedUser, returnValue);
-
+		returnValue = modelMapper.map(updatedUser, UserRest.class);
+		
 		return returnValue;
 
 	}
@@ -117,10 +118,10 @@ public class UserController {
 		List<UserRest> returnValue = new ArrayList<UserRest>();
 
 		List<UserDto> users = userService.getUsers(page, limit);
-
+		ModelMapper modelMapper = new ModelMapper();
+		
 		for (UserDto userDto : users) {
-			UserRest userModel = new UserRest();
-			BeanUtils.copyProperties(userDto, userModel);
+			UserRest userModel = modelMapper.map(userDto, UserRest.class);
 			returnValue.add(userModel);
 		}
 
