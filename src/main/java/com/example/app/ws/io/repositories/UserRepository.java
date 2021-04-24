@@ -21,7 +21,6 @@ public interface UserRepository extends PagingAndSortingRepository<UserEntity, L
 	UserEntity findByEmailVerificationToken(String token);
 	
 	//Native SQL queries
-	
 	@Query(value="Select * from users u where u.EMAIL_VERIFICATION_STATUS = 'true'",
 			countQuery = "Select count(*) from users u where u.EMAIL_VERIFICATION_STATUS = 'true'",
 			nativeQuery = true)
@@ -50,5 +49,22 @@ public interface UserRepository extends PagingAndSortingRepository<UserEntity, L
 			nativeQuery = true)
 	void updateUserEmailVerificationStatus(@Param("emailVerificationStatus") boolean emailVerificationStatus,
 											@Param("userId") String userId);
+	
+	
+	//JPQL(Java persistence query language) select SQL query
+	@Query("select user from UserEntity user where user.userId = :userId")
+	UserEntity findUserEntityByUserId(@Param("userId") String userId);
+	
+	//JPQL to select specific fields only
+	@Query("select user.firstName, user.lastName from UserEntity user where user.userId = :userId")
+	List<Object[]> findUserEntityFullNameByUserId(@Param("userId") String userId);
+		
+	//JPQL update sqL query
+	@Transactional
+	@Modifying
+	@Query("UPDATE UserEntity u set u.emailVerificationStatus = :emailVerificationStatus where u.userId = :userId")
+	void updateUserEntityEmailVerificationStatus(@Param("emailVerificationStatus") boolean emailVerificationStatus,
+			@Param("userId") String userId);
+	
 	
 }
