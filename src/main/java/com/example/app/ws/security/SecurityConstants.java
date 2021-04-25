@@ -1,7 +1,5 @@
 package com.example.app.ws.security;
 
-import org.springframework.http.HttpMethod;
-
 import com.example.app.ws.SpringApplicationContext;
 
 public class SecurityConstants {

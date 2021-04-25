@@ -40,6 +40,7 @@ import com.example.app.ws.ui.model.response.UserRest;
 
 @RestController
 @RequestMapping("/users") // http://localhost:8080/users
+//@CrossOrigin(origins = {"http://localhost:8083", "http://localhost:8084"})
 public class UserController {
 
 	@Autowired
