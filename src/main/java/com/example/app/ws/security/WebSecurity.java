@@ -12,7 +12,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.example.app.ws.service.UserService;
 
@@ -43,6 +43,8 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 		.antMatchers(HttpMethod.POST, SecurityConstants.PASSWORD_RESET_URL)
 		.permitAll()
 		.antMatchers(SecurityConstants.H2_CONSOLE)
+		.permitAll()
+		.antMatchers("/v2/api-docs", "/configuration/**", "/swagger*/**", "/webjars/**")
 		.permitAll()
 		.anyRequest().authenticated().and()
 		.addFilter(getAuthenticationFilter())
@@ -78,7 +80,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 		final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration);
 		
-		return (CorsConfigurationSource) source;
+		return source;
 	}
 	
 }
