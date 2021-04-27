@@ -38,6 +38,9 @@ import com.example.app.ws.ui.model.response.RequestOperationName;
 import com.example.app.ws.ui.model.response.RequestOperationStatus;
 import com.example.app.ws.ui.model.response.UserRest;
 
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+
 @RestController
 @RequestMapping("/users") // http://localhost:8080/users
 //@CrossOrigin(origins = {"http://localhost:8083", "http://localhost:8084"})
@@ -48,7 +51,10 @@ public class UserController {
 
 	@Autowired
 	AddressService addressesService;
-
+	
+	@ApiImplicitParams({ 
+		@ApiImplicitParam(name = "authorization", value = "${userController.authorizationHeader.description}", paramType = "header")
+	})
 	@GetMapping(path = "/{id}", produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
 	public UserRest getUser(@PathVariable String id) {
 		UserRest returnValue = new UserRest();
@@ -78,6 +84,9 @@ public class UserController {
 		return returnValue;
 	}
 
+	@ApiImplicitParams({ 
+		@ApiImplicitParam(name = "authorization", value = "${userController.authorizationHeader.description}", paramType = "header")
+	})
 	@PutMapping(path = "/{id}", consumes = { MediaType.APPLICATION_JSON_VALUE,
 			MediaType.APPLICATION_XML_VALUE }, produces = { MediaType.APPLICATION_JSON_VALUE,
 					MediaType.APPLICATION_XML_VALUE })
@@ -100,7 +109,10 @@ public class UserController {
 		return returnValue;
 
 	}
-
+	
+	@ApiImplicitParams({ 
+		@ApiImplicitParam(name = "authorization", value = "${userController.authorizationHeader.description}", paramType = "header")
+	})
 	@DeleteMapping(path = "/{id}", produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
 	public OperationStatusModel deleteUser(@PathVariable String id) {
 		OperationStatusModel returnValue = new OperationStatusModel();
@@ -113,6 +125,9 @@ public class UserController {
 		return returnValue;
 	}
 
+	@ApiImplicitParams({ 
+		@ApiImplicitParam(name = "authorization", value = "${userController.authorizationHeader.description}", paramType = "header")
+	})
 	@GetMapping(produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
 	public List<UserRest> getUsers(@RequestParam(value = "page", defaultValue = "0") int page,
 			@RequestParam(value = "limit", defaultValue = "25") int limit) {
@@ -129,6 +144,9 @@ public class UserController {
 		return returnValue;
 	}
 
+	@ApiImplicitParams({ 
+		@ApiImplicitParam(name = "authorization", value = "${userController.authorizationHeader.description}", paramType = "header")
+	})
 	// localhost:8080/mobile-app-ws/users/{id}/addresses
 	@GetMapping(path = "/{id}/addresses", produces = { MediaType.APPLICATION_JSON_VALUE,
 			MediaType.APPLICATION_XML_VALUE })
@@ -162,6 +180,9 @@ public class UserController {
 		return CollectionModel.of(returnValue, userLink, selfLink);
 	}
 
+	@ApiImplicitParams({ 
+		@ApiImplicitParam(name = "authorization", value = "${userController.authorizationHeader.description}", paramType = "header")
+	})
 	// localhost:8080/mobile-app-ws/users/{id}/addresses/{addressId}
 	@GetMapping(path = "/{userId}/addresses/{addressId}", produces = { MediaType.APPLICATION_JSON_VALUE,
 			MediaType.APPLICATION_XML_VALUE })
