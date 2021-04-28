@@ -2,14 +2,19 @@ package com.example.app.ws.io.entity;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Collection;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
 
 @Entity
 @Table(name="users")
@@ -43,6 +48,11 @@ public class UserEntity implements Serializable {
 	@OneToMany(mappedBy="userDetails", cascade=CascadeType.ALL)
 	private List<AddressEntity> addresses;
 	
+	@ManyToMany(cascade = {CascadeType.PERSIST})
+	@JoinTable(name="user_roles", 
+			joinColumns=@JoinColumn(name="users_id", referencedColumnName = "id"),
+			inverseJoinColumns = @JoinColumn(name="roles_id", referencedColumnName = "id"))
+	private Collection<RoleEntity> roles;
 	
 	public long getId() {
 		return id;
