@@ -14,6 +14,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import com.example.app.ws.io.repositories.UserRepository;
 import com.example.app.ws.service.UserService;
 
 
@@ -22,10 +23,12 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 	
 	public final UserService userDetailsService;
 	public final BCryptPasswordEncoder bCryptPasswordEncoder;
+	public final UserRepository userRepository;
 	
-	public WebSecurity(UserService userDetailsService, BCryptPasswordEncoder bCryptPasswordEncoder) {
+	public WebSecurity(UserService userDetailsService, BCryptPasswordEncoder bCryptPasswordEncoder, UserRepository userRepository) {
 		this.userDetailsService = userDetailsService;
 		this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+		this.userRepository = userRepository;
 	}
 	
 	@Override
@@ -48,7 +51,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 		.permitAll()
 		.anyRequest().authenticated().and()
 		.addFilter(getAuthenticationFilter())
-		.addFilter(new AuthorizationFilter(authenticationManager()))
+		.addFilter(new AuthorizationFilter(authenticationManager(), userRepository))
 		.sessionManagement()
 		.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 		
