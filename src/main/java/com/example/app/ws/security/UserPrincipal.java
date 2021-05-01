@@ -17,9 +17,11 @@ public class UserPrincipal implements UserDetails {
 	private static final long serialVersionUID = -6665078713568168025L;
 	
 	private UserEntity userEntity;
+	private String userId;
 
 	public UserPrincipal(UserEntity userEntity) {
 		this.userEntity = userEntity;
+		this.userId = userEntity.getUserId();
 	}
 
 	@Override
@@ -82,6 +84,14 @@ public class UserPrincipal implements UserDetails {
 
 	public void setUserEntity(UserEntity userEntity) {
 		this.userEntity = userEntity;
+	}
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 
 }
