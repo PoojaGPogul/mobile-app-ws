@@ -1,6 +1,8 @@
 package com.example.app.ws.service.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
@@ -16,8 +18,10 @@ import org.springframework.stereotype.Service;
 
 import com.example.app.ws.exceptions.UserServiceException;
 import com.example.app.ws.io.entity.PasswordResetTokenEntity;
+import com.example.app.ws.io.entity.RoleEntity;
 import com.example.app.ws.io.entity.UserEntity;
 import com.example.app.ws.io.repositories.PasswordResetTokenRepository;
+import com.example.app.ws.io.repositories.RoleRepository;
 import com.example.app.ws.io.repositories.UserRepository;
 import com.example.app.ws.security.UserPrincipal;
 import com.example.app.ws.service.UserService;
@@ -44,6 +48,9 @@ public class UserServiceImpl implements UserService {
 	
 	@Autowired
 	AmazonSES amazonSES;
+	
+	@Autowired
+	RoleRepository roleRepository;
 
 	@Override
 	public UserDto createUser(UserDto userDto) {
@@ -67,6 +74,17 @@ public class UserServiceImpl implements UserService {
 		userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(userDto.getPassword()));
 		userEntity.setEmailVerificationToken(utils.generateEmailVerificationToken(publicUserId));
 		userEntity.setEmailVerificationStatus(false);
+		
+		//Set roles
+		Collection<RoleEntity> roleEntities = new HashSet<RoleEntity>();
+		for(String role: userDto.getRoles()) {
+			RoleEntity roleEntity = roleRepository.findByName(role);
+			if(roleEntity != null) {
+				roleEntities.add(roleEntity);
+			}
+		}
+		
+		userEntity.setRoles(roleEntities);
 		
 		UserEntity storedUserDetails = userRepository.save(userEntity);
 		UserDto returnValue = modelMapper.map(storedUserDetails, UserDto.class);

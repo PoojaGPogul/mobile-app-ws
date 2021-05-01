@@ -1,8 +1,7 @@
 package com.example.app.ws.security;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.HashSet;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -27,8 +26,8 @@ public class UserPrincipal implements UserDetails {
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		
-		List<GrantedAuthority> grantedAuthorities = new ArrayList<GrantedAuthority>();
-		List<AuthorityEntity> authorityEntities = new ArrayList<AuthorityEntity>();
+		Collection<GrantedAuthority> grantedAuthorities = new HashSet<>();
+		Collection<AuthorityEntity> authorityEntities = new HashSet<>();
 		
 		//Get user Roles
 		Collection<RoleEntity> roles = userEntity.getRoles();

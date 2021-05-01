@@ -3,6 +3,7 @@ package com.example.app.ws.ui.controller;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.app.ws.exceptions.UserServiceException;
 import com.example.app.ws.service.AddressService;
 import com.example.app.ws.service.UserService;
+import com.example.app.ws.shared.Roles;
 import com.example.app.ws.shared.dto.AddressDto;
 import com.example.app.ws.shared.dto.UserDto;
 import com.example.app.ws.ui.model.request.PasswordResetModel;
@@ -56,6 +58,8 @@ public class UserController {
 	@Autowired
 	AddressService addressesService;
 	
+	// Method is executed and return value only if this condition is true
+	@PostAuthorize("hasRole('ADMIN') or returnObject.userId == principal.userId") 
 	@ApiImplicitParams({ 
 		@ApiImplicitParam(name = "authorization", value = "${userController.authorizationHeader.description}", paramType = "header")
 	})
@@ -83,6 +87,7 @@ public class UserController {
 
 		ModelMapper modelMapper = new ModelMapper();
 		UserDto userDto = modelMapper.map(userDetails, UserDto.class);
+		userDto.setRoles(new HashSet<String>(Arrays.asList(Roles.ROLE_USER.name())));
 
 		UserDto createdUser = userService.createUser(userDto);
 		UserRest returnValue = modelMapper.map(createdUser, UserRest.class);
@@ -116,8 +121,7 @@ public class UserController {
 
 	}
 	
-	@PreAuthorize("hasRole('ROLE_ADMIN') or #id == principal.userId")
-	//@PreAuthorize("hasAuthority('DELETE_AUTHORITY')")
+	@PreAuthorize("hasRole('ADMIN') or #id == principal.userId")
 	//@Secured("ROLE_ADMIN")
 	@ApiImplicitParams({ 
 		@ApiImplicitParam(name = "authorization", value = "${userController.authorizationHeader.description}", paramType = "header")
